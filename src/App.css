@@ -1,0 +1,430 @@
+
+/* Apply consistent sizing to every element */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+/* Main page */
+
+.app-container {
+  min-height: 100vh;
+  background: #f4f6f8;
+  color: #252a30;
+  font-family: Arial, sans-serif;
+  padding: 25px 40px;
+}
+
+.page-header {
+  background: #ffffff;
+  padding: 18px 24px;
+  border-radius: 7px;
+  border-bottom: 2px solid #164b80;
+}
+
+.page-header h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+}
+
+.page-header p,
+.section-heading p {
+  margin: 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.main-content {
+  margin-top: 28px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.section-heading h3,
+.background-card h3 {
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+
+/* Buttons */
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #1765a5;
+  outline-offset: 2px;
+}
+
+.add-button,
+.save-button {
+  background: #1765a5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 9px 18px;
+  font-size: 12px;
+}
+
+/* Vehicle table */
+
+.table-container {
+  background: white;
+  border-radius: 7px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+th,
+td {
+  padding: 15px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+th {
+  background: #eaf0f5;
+  font-weight: 600;
+}
+
+/* Background information card */
+
+.background-card {
+  margin-top: 25px;
+  padding: 20px;
+  background: white;
+  border-radius: 7px;
+}
+
+.background-card p {
+  color: #777;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.background-card button {
+  padding: 9px 14px;
+  background: #e8edf2;
+  border: 1px solid #ccd5dd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Floating popup - normal size */
+
+.popup-window {
+  position: fixed;
+  z-index: 1000;
+
+  /* Responsive width and height */
+  width: min(90vw, 48rem);
+  height: min(80dvh, 42rem);
+
+  min-width: min(18rem, 90vw);
+  min-height: 16rem;
+
+  background: white;
+  border: 1px solid #cbd2d9;
+  border-radius: 7px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  user-select: none;
+}
+
+/* Medium size */
+
+.popup-window.medium {
+  width: min(92vw, 60rem);
+  height: min(85dvh, 48rem);
+}
+
+/* Large size */
+
+.popup-window.large {
+  width: min(96vw, 75rem);
+  height: min(90dvh, 56rem);
+}
+
+/* Popup header */
+
+.popup-header {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 0 12px;
+
+  background: #164b80;
+  color: white;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: grab;
+}
+
+.popup-header:active {
+  cursor: grabbing;
+}
+
+/* Header buttons */
+
+.window-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.window-controls button {
+  width: 25px;
+  height: 25px;
+  color: white;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.window-controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Form area */
+
+.popup-form {
+  padding: 18px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  cursor: default;
+  user-select: text;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  min-width: 0;
+  height: 33px;
+  padding: 6px 8px;
+  font-size: 11px;
+  border: 1px solid #d1d7de;
+  border-radius: 4px;
+  outline: none;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #1765a5;
+}
+
+/* Form action buttons */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  padding: 8px 15px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.save-button {
+  padding: 8px 15px;
+  background: #1765a5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Minimized floating tab */
+
+.minimized-bar {
+  position: fixed;
+  z-index: 1001;
+
+  width: min(210px, calc(100vw - 16px));
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 8px 12px;
+
+  background: #164b80;
+  color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  font-size: 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.minimized-bar:active {
+  cursor: grabbing;
+}
+
+.minimized-bar span {
+  flex: 1;
+}
+
+.minimized-bar button {
+  color: white;
+  background: transparent;
+  border: none;
+  font-size: 17px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.minimized-bar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Tablet and smaller laptop screens */
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 20px;
+  }
+
+  .popup-form {
+    padding: 14px;
+  }
+
+  .form-grid {
+    gap: 10px;
+  }
+}
+
+/* Mobile screens */
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  .page-header {
+    padding: 15px;
+  }
+
+  .page-header h2 {
+    font-size: 17px;
+  }
+
+  .main-content {
+    margin-top: 20px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Normal popup on mobile */
+  .popup-window {
+    width: 94vw;
+    height: 76dvh;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* Medium popup on mobile */
+  .popup-window.medium {
+    width: 96vw;
+    height: 84dvh;
+  }
+
+  /* Large popup on mobile */
+  .popup-window.large {
+    width: 98vw;
+    height: 90dvh;
+  }
+
+  .popup-form {
+    padding: 12px;
+  }
+
+  .form-actions {
+    margin-top: 15px;
+  }
+}
+
+/* Very narrow mobile screens */
+
+@media (max-width: 360px) {
+  .popup-header {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .popup-form {
+    padding: 10px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 12px;
+  }
+}
