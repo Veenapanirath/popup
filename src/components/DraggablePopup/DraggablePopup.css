@@ -3,11 +3,12 @@
   position: fixed;
   z-index: 1000;
 
-  width: min(90vw, 48rem);
-  height: min(80dvh, 42rem);
+  width: min(90vw, 28rem);
+  height: auto;
+  max-height: 75dvh;
 
   min-width: min(18rem, 90vw);
-  min-height: 16rem;
+  min-height: 0;
 
   display: flex;
   flex-direction: column;
@@ -19,23 +20,37 @@
 
   overflow: hidden;
   user-select: none;
+  box-sizing: border-box;
 }
 
-/* Medium popup size */
-.popup-window.medium {
-  width: min(92vw, 60rem);
-  height: min(85dvh, 48rem);
+.popup-window.normal {
+  width: min(90vw, 28rem);
+  height: auto;
+  max-height: 75dvh;
 }
 
-/* Large popup size */
-.popup-window.large {
-  width: min(96vw, 75rem);
-  height: min(90dvh, 56rem);
+
+
+.popup-window.maximized {
+  width: 85vw;
+  height: 85dvh;
+
+  max-width: none;
+  max-height: 85dvh;
+
+  min-width: 0;
+  min-height: 0;
+
+  border-radius: 12px;
 }
 
-/* =================================
-   POPUP HEADER
-================================= */
+
+.popup-window.maximized .popup-form {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
 
 .popup-header {
   display: flex;
@@ -63,14 +78,12 @@
   font-weight: 600;
 }
 
-/* =================================
-   WINDOW CONTROL BUTTONS
-================================= */
 
 .window-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .window-controls button {
@@ -95,27 +108,43 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* =================================
-   POPUP CONTENT AREA
-================================= */
+
+
 
 .popup-form {
-  flex: 1;
+  flex: 0 1 auto;
+
   min-height: 0;
+  max-height: calc(75dvh - 48px);
 
   padding: 18px;
 
   overflow-y: auto;
+  overflow-x: hidden;
 
   background: #ffffff;
 
   cursor: default;
   user-select: text;
+  box-sizing: border-box;
 }
 
-/* =================================
-   MINIMIZED POPUP TAB
-================================= */
+
+.popup-form {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af transparent;
+}
+
+.popup-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popup-form::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 10px;
+}
+
+
 
 .minimized-bar {
   position: fixed;
@@ -139,6 +168,7 @@
 
   cursor: grab;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .minimized-bar:active {
@@ -170,11 +200,22 @@
   background: rgba(255, 255, 255, 0.35);
 }
 
+
 /* =================================
    TABLET RESPONSIVENESS
 ================================= */
 
 @media (max-width: 768px) {
+
+  .popup-window.normal {
+    width: 90vw;
+  }
+
+  .popup-window.maximized {
+    width: 90vw;
+    height: 85dvh;
+  }
+
   .popup-form {
     padding: 14px;
   }
@@ -184,27 +225,23 @@
   }
 }
 
-/* =================================
-   MOBILE RESPONSIVENESS
-================================= */
+
 
 @media (max-width: 600px) {
-  .popup-window {
+
+  .popup-window.normal {
     width: 94vw;
-    height: 76dvh;
-
+    max-height: 85dvh;
     min-width: 0;
-    min-height: 0;
+    border-radius: 10px;
   }
 
-  .popup-window.medium {
-    width: 96vw;
-    height: 84dvh;
-  }
-
-  .popup-window.large {
-    width: 98vw;
-    height: 90dvh;
+  .popup-window.maximized {
+    width: 94vw;
+    height: 85dvh;
+    max-height: 85dvh;
+    min-width: 0;
+    border-radius: 10px;
   }
 
   .popup-form {
@@ -229,11 +266,8 @@
   }
 }
 
-/* =================================
-   VERY SMALL MOBILE SCREENS
-================================= */
-
 @media (max-width: 360px) {
+
   .popup-header {
     padding: 8px;
   }

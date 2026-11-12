@@ -1,5 +1,5 @@
 
-/* Apply consistent sizing to every element */
+
 * {
   box-sizing: border-box;
 }
@@ -10,8 +10,6 @@ body,
   min-height: 100%;
   margin: 0;
 }
-
-/* Main page */
 
 .app-container {
   min-height: 100vh;
@@ -58,7 +56,6 @@ body,
   margin: 0 0 6px;
 }
 
-/* Buttons */
 
 button {
   cursor: pointer;
@@ -82,7 +79,7 @@ select:focus-visible {
   font-size: 12px;
 }
 
-/* Vehicle table */
+
 
 .table-container {
   background: white;
@@ -108,7 +105,6 @@ th {
   font-weight: 600;
 }
 
-/* Background information card */
 
 .background-card {
   margin-top: 25px;
@@ -131,13 +127,11 @@ th {
   font-size: 12px;
 }
 
-/* Floating popup - normal size */
 
 .popup-window {
   position: fixed;
   z-index: 1000;
 
-  /* Responsive width and height */
   width: min(90vw, 48rem);
   height: min(80dvh, 42rem);
 
@@ -155,8 +149,6 @@ th {
 
   user-select: none;
 }
-
-/* Medium size */
 
 .popup-window.medium {
   width: min(92vw, 60rem);
@@ -339,7 +331,6 @@ th {
   border-radius: 3px;
 }
 
-/* Tablet and smaller laptop screens */
 
 @media (max-width: 768px) {
   .app-container {
@@ -355,7 +346,7 @@ th {
   }
 }
 
-/* Mobile screens */
+
 
 @media (max-width: 600px) {
   .app-container {
@@ -382,7 +373,7 @@ th {
     grid-template-columns: 1fr;
   }
 
-  /* Normal popup on mobile */
+
   .popup-window {
     width: 94vw;
     height: 76dvh;
@@ -390,13 +381,12 @@ th {
     min-height: 0;
   }
 
-  /* Medium popup on mobile */
+ 
   .popup-window.medium {
     width: 96vw;
     height: 84dvh;
   }
 
-  /* Large popup on mobile */
   .popup-window.large {
     width: 98vw;
     height: 90dvh;
@@ -411,7 +401,6 @@ th {
   }
 }
 
-/* Very narrow mobile screens */
 
 @media (max-width: 360px) {
   .popup-header {
@@ -427,4 +416,60 @@ th {
   .form-group select {
     font-size: 12px;
   }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-content h2 {
+  margin: 0 0 8px;
+  color: #1e293b;
+}
+
+.form-content label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-content input,
+.form-content textarea,
+.form-content select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.form-content button {
+  padding: 11px;
+  margin-top: 10px;
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.page-navigation {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  flex-wrap: wrap;
+}
+
+.page-navigation button {
+  padding: 10px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.page-navigation button:hover {
+  background: #eaf1ff;
 }
