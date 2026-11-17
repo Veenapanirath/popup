@@ -1,40 +1,50 @@
 
-import { useState } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+} from "react";
+
 import "./App.css";
 
-import DraggablePopup from "./components/DraggablePopup";
-
-import VehicleForm from "./pages/VehicleManagement/VehicleForm";
+import VehiclePage from "./pages/VehicleManagement/VehiclePage";
 import CustomerForm from "./pages/Customer/CustomerForm";
 import LoginForm from "./pages/Login/LoginForm";
 
-type Page = "vehicle" | "customer" | "login";
+import { DraggablePopup } from "./components/DraggablePopup";
+
+import type { Page } from "./types/booking";
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("vehicle");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOtherPopupOpen, setIsOtherPopupOpen] = useState(false);
 
-  const openPopup = () => {
-    setIsOpen(true);
-  };
+  const navigationHandlerRef = useRef<
+    ((page: Page) => void) | null
+  >(null);
 
-  const closePopup = () => {
-    setIsOpen(false);
-  };
+  const registerNavigationHandler = useCallback(
+    (handler: (page: Page) => void) => {
+      navigationHandlerRef.current = handler;
+    },
+    []
+  );
 
-  const handleVehicleSubmit = (data: {
-    fullName: string;
-    age: string;
-    email: string;
-    phone: string;
-    gender: string;
-    vehicle: string;
-    bookingDate: string;
-    location: string;
-  }) => {
-    console.log("Submitted vehicle details:", data);
-    alert("Vehicle details submitted successfully!");
-    closePopup();
+ 
+  const navigateToPage = useCallback((page: Page) => {
+    setIsOtherPopupOpen(false);
+    setCurrentPage(page);
+  }, []);
+
+
+  const handleNavigation = (page: Page) => {
+    if (page === currentPage) return;
+
+    if (currentPage === "vehicle") {
+      navigationHandlerRef.current?.(page);
+    } else {
+      navigateToPage(page);
+    }
   };
 
   const handleCustomerSubmit = (data: {
@@ -46,7 +56,7 @@ function App() {
   }) => {
     console.log("Submitted customer details:", data);
     alert("Customer details submitted successfully!");
-    closePopup();
+    setIsOtherPopupOpen(false);
   };
 
   const handleLoginSubmit = (data: {
@@ -55,106 +65,21 @@ function App() {
   }) => {
     console.log("Login details:", data);
     alert("Login form submitted!");
-    closePopup();
+    setIsOtherPopupOpen(false);
   };
 
-  return (
-    <div className="app-container">
+  const renderPage = () => {
+    switch (currentPage) {
+      case "vehicle":
+        return (
+          <VehiclePage
+            onNavigate={navigateToPage}
+            onRegisterNavigationHandler={registerNavigationHandler}
+          />
+        );
 
-      <header className="page-header">
-        <h2>Ford Management Demo</h2>
-        <p>Reusable draggable popup demonstration</p>
-      </header>
-
-      <nav className="page-navigation">
-        <button onClick={() => {
-          setIsOpen(false);
-          setCurrentPage("vehicle");
-        }}>
-          Vehicle Management
-        </button>
-
-        <button onClick={() => {
-          setIsOpen(false);
-          setCurrentPage("customer");
-        }}>
-          Customer Management
-        </button>
-
-        <button onClick={() => {
-          setIsOpen(false);
-          setCurrentPage("login");
-        }}>
-          Login
-        </button>
-      </nav>
-
-      <main className="main-content">
-
-        {currentPage === "vehicle" && (
-          <>
-            <div className="section-heading">
-              <div>
-                <h3>Vehicle Details</h3>
-                <p>View and manage your vehicle records.</p>
-              </div>
-
-              <button className="add-button" onClick={openPopup}>
-                + Add Vehicle
-              </button>
-            </div>
-
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Vehicle ID</th>
-                    <th>Vehicle Model</th>
-                    <th>Registration</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr>
-                    <td>001</td>
-                    <td>Ford Mustang</td>
-                    <td>HR 26 AB 1234</td>
-                    <td>Active</td>
-                  </tr>
-
-                  <tr>
-                    <td>002</td>
-                    <td>Ford Endeavour</td>
-                    <td>HR 26 CD 5678</td>
-                    <td>Active</td>
-                  </tr>
-
-                  <tr>
-                    <td>003</td>
-                    <td>Ford EcoSport</td>
-                    <td>HR 26 EF 9012</td>
-                    <td>Pending</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="background-card">
-              <h3>Additional Information</h3>
-              <p>
-                This page represents the content behind the popup.
-                It should remain interactive while the popup is open.
-              </p>
-
-              <button onClick={() => alert("Background interaction works!")}>
-                Test Background Interaction
-              </button>
-            </div>
-          </>
-        )}
-
-        {currentPage === "customer" && (
+      case "customer":
+        return (
           <>
             <div className="section-heading">
               <div>
@@ -162,7 +87,10 @@ function App() {
                 <p>View and manage customer records.</p>
               </div>
 
-              <button className="add-button" onClick={openPopup}>
+              <button
+                className="add-button"
+                onClick={() => setIsOtherPopupOpen(true)}
+              >
                 + Add Customer
               </button>
             </div>
@@ -172,9 +100,10 @@ function App() {
               <p>Click Add Customer to open the customer form.</p>
             </div>
           </>
-        )}
+        );
 
-        {currentPage === "login" && (
+      case "login":
+        return (
           <>
             <div className="section-heading">
               <div>
@@ -182,7 +111,10 @@ function App() {
                 <p>Open the login form.</p>
               </div>
 
-              <button className="add-button" onClick={openPopup}>
+              <button
+                className="add-button"
+                onClick={() => setIsOtherPopupOpen(true)}
+              >
                 Open Login
               </button>
             </div>
@@ -192,42 +124,55 @@ function App() {
               <p>Click Open Login to display the login popup.</p>
             </div>
           </>
-        )}
+        );
 
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <header className="page-header">
+        <h2>Ford Management Demo</h2>
+        <p>Reusable draggable popup demonstration</p>
+      </header>
+
+      <nav className="page-navigation">
+        <button onClick={() => handleNavigation("vehicle")}>
+          Vehicle Management
+        </button>
+
+        <button onClick={() => handleNavigation("customer")}>
+          Customer Management
+        </button>
+
+        <button onClick={() => handleNavigation("login")}>
+          Login
+        </button>
+      </nav>
+
+      <main className="main-content">
+        {renderPage()}
       </main>
 
-      {isOpen && (
+      {isOtherPopupOpen && currentPage === "customer" && (
         <DraggablePopup
-          title={
-            currentPage === "vehicle"
-              ? "Add Vehicle Details"
-              : currentPage === "customer"
-              ? "Add Customer Details"
-              : "User Login"
-          }
-          size={
-            currentPage === "vehicle"
-              ? "medium"
-              : currentPage === "customer"
-              ? "large"
-              : "normal"
-          }
-          onClose={closePopup}
+          title="Add Customer Details"
+          onClose={() => setIsOtherPopupOpen(false)}
         >
-          {currentPage === "vehicle" && (
-            <VehicleForm onSubmit={handleVehicleSubmit} />
-          )}
-
-          {currentPage === "customer" && (
-            <CustomerForm onSubmit={handleCustomerSubmit} />
-          )}
-
-          {currentPage === "login" && (
-            <LoginForm onSubmit={handleLoginSubmit} />
-          )}
+          <CustomerForm onSubmit={handleCustomerSubmit} />
         </DraggablePopup>
       )}
 
+      {isOtherPopupOpen && currentPage === "login" && (
+        <DraggablePopup
+          title="User Login"
+          onClose={() => setIsOtherPopupOpen(false)}
+        >
+          <LoginForm onSubmit={handleLoginSubmit} />
+        </DraggablePopup>
+      )}
     </div>
   );
 }

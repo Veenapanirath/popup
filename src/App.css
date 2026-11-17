@@ -473,3 +473,57 @@ th {
 .page-navigation button:hover {
   background: #eaf1ff;
 }
+
+/* Booking table actions */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-button,
+.delete-button {
+  padding: 7px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.edit-button {
+  background-color: #e0edff;
+  color: #1555a5;
+}
+
+.edit-button:hover {
+  background-color: #c9ddff;
+}
+
+.delete-button {
+  background-color: #fee2e2;
+  color: #b42318;
+}
+
+.delete-button:hover {
+  background-color: #fecaca;
+}
+
+/* Keep wide booking tables usable on smaller screens */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-container table {
+  min-width: 1100px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap;
+}

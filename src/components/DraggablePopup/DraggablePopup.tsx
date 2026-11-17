@@ -22,6 +22,8 @@ type RestoreSnapshot = {
   position: Position;
 };
 
+type PopupKind = "popup" | "minimized";
+
 type DraggablePopupProps = {
   title: string;
   children: ReactNode;
@@ -34,10 +36,9 @@ export default function DraggablePopup({
   onClose,
 }: DraggablePopupProps) {
 
-  // Popup starts in normal size
   const [mode, setMode] = useState<PopupState>("normal");
 
-  // Minimized is handled separately
+
   const [isMinimized, setIsMinimized] = useState(false);
 
   const [position, setPosition] = useState<Position>({
@@ -54,7 +55,7 @@ export default function DraggablePopup({
   const popupRef = useRef<HTMLDivElement>(null);
   const minimizedRef = useRef<HTMLDivElement>(null);
 
-  // Remember normal popup position
+
   const normalPosition = useRef<Position>({
     x: 24,
     y: 24,
@@ -66,9 +67,10 @@ export default function DraggablePopup({
     position: { x: 24, y: 24 },
   });
 
+
   const dragRef = useRef({
     dragging: false,
-    kind: "popup" as "popup" | "minimized",
+    kind: "popup" as PopupKind,
     pointerId: -1,
     startX: 0,
     startY: 0,
@@ -76,9 +78,37 @@ export default function DraggablePopup({
     initialY: 0,
   });
 
-  // Keeps a portion of the popup visible on the screen
+
+  const getMaximizedPosition = useCallback((): Position => {
+    const screenWidth = window.innerWidth;
+
+    let popupWidth = 0.85;
+
+    if (screenWidth <= 600) {
+      popupWidth = 0.94;
+    } else if (screenWidth <= 768) {
+      popupWidth = 0.90;
+    }
+
+    return {
+      x: (screenWidth * (1 - popupWidth)) / 2,
+      y: window.innerHeight * 0.075,
+    };
+  }, []);
+
+  // centered minimized tab position
+  const getMinimizedPosition = useCallback((): Position => {
+    const width = Math.min(210, window.innerWidth - 16);
+    const height = window.innerWidth <= 600 ? 46 : 48;
+
+    return {
+      x: Math.max(0, (window.innerWidth - width) / 2),
+      y: Math.max(0, (window.innerHeight - height) / 2),
+    };
+  }, []);
+
   const clampPosition = useCallback(
-    (nextPosition: Position, kind: "popup" | "minimized") => {
+    (nextPosition: Position, kind: PopupKind) => {
       const element =
         kind === "popup"
           ? popupRef.current
@@ -104,14 +134,18 @@ export default function DraggablePopup({
     []
   );
 
-  // Starts dragging popup or minimized tab
+
   const startDrag = (
     e: PointerEvent<HTMLDivElement>,
-    kind: "popup" | "minimized"
+    kind: PopupKind
   ) => {
+  
+    if (e.button !== 0) {
+      return;
+    }
+
     const target = e.target as HTMLElement;
 
-    // Do not drag when using form controls or buttons
     if (
       target.closest(
         "button, input, select, textarea, option, a, [data-no-drag]"
@@ -138,7 +172,6 @@ export default function DraggablePopup({
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  // Moves popup while dragging
   const moveWindow = (e: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
 
@@ -168,7 +201,6 @@ export default function DraggablePopup({
     }
   };
 
-  // Stops dragging
   const stopDrag = (e: PointerEvent<HTMLDivElement>) => {
     if (dragRef.current.pointerId !== e.pointerId) {
       return;
@@ -177,55 +209,36 @@ export default function DraggablePopup({
     dragRef.current.dragging = false;
     dragRef.current.pointerId = -1;
   };
-
-  // Maximizes or restores popup
   const toggleMaximize = () => {
     if (mode === "normal") {
-      // Save normal position before maximizing
+     
       normalPosition.current = { ...position };
 
-      // Move maximized popup to the centre
-      setPosition({
-        x: window.innerWidth * 0.075,
-        y: window.innerHeight * 0.075,
-      });
-
+      setPosition(getMaximizedPosition());
       setMode("maximized");
     } else {
-      // Return to previous normal position
+     
       setPosition({ ...normalPosition.current });
-
       setMode("normal");
     }
   };
 
-  // Minimizes popup and places floating tab in the centre
   const minimizePopup = () => {
     restoreSnapshot.current = {
       mode,
       position: { ...position },
     };
 
-    // Get minimized tab dimensions and centre it
-    const tabWidth = minimizedRef.current?.offsetWidth ?? 210;
-    const tabHeight = minimizedRef.current?.offsetHeight ?? 48;
-
-    setMinimizedPosition({
-      x: Math.max(0, (window.innerWidth - tabWidth) / 2),
-      y: Math.max(0, (window.innerHeight - tabHeight) / 2),
-    });
-
+    setMinimizedPosition(getMinimizedPosition());
     setIsMinimized(true);
   };
 
-  // Restores popup to its previous state
+
   const restorePopup = () => {
     setPosition({ ...restoreSnapshot.current.position });
     setMode(restoreSnapshot.current.mode);
     setIsMinimized(false);
   };
-
-  // Centers popup when it first appears
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const element = popupRef.current;
@@ -248,7 +261,32 @@ export default function DraggablePopup({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Adjusts popup position when browser is resized
+  useEffect(() => {
+    if (isMinimized) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      if (mode === "maximized") {
+        setPosition(getMaximizedPosition());
+        return;
+      }
+
+      setPosition((current) => {
+        const safePosition = clampPosition(current, "popup");
+        normalPosition.current = safePosition;
+        return safePosition;
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [
+    isMinimized,
+    mode,
+    clampPosition,
+    getMaximizedPosition,
+  ]);
+
   useEffect(() => {
     const handleResize = () => {
       if (isMinimized) {
@@ -262,11 +300,7 @@ export default function DraggablePopup({
           return safePosition;
         });
       } else {
-        // Keep maximized popup centred after resizing
-        setPosition({
-          x: window.innerWidth * 0.075,
-          y: window.innerHeight * 0.075,
-        });
+        setPosition(getMaximizedPosition());
       }
     };
 
@@ -275,16 +309,20 @@ export default function DraggablePopup({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [isMinimized, mode, clampPosition]);
+  }, [
+    isMinimized,
+    mode,
+    clampPosition,
+    getMaximizedPosition,
+  ]);
 
-  // Minimized popup UI
   if (isMinimized) {
     return (
       <div
         ref={minimizedRef}
         className="minimized-bar"
         style={{
-          left: minimizedPosition.x,
+          left: position.x === -1 ? 0 : minimizedPosition.x,
           top: minimizedPosition.y,
         }}
         onPointerDown={(e) => startDrag(e, "minimized")}
@@ -295,18 +333,25 @@ export default function DraggablePopup({
       >
         <span>{title}</span>
 
-        <button type="button" onClick={restorePopup}>
+        <button
+          type="button"
+          onClick={restorePopup}
+          aria-label="Restore popup"
+        >
           Restore
         </button>
 
-        <button type="button" onClick={onClose}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close popup"
+        >
           ×
         </button>
       </div>
     );
   }
 
-  // Normal and maximized popup UI
   return (
     <div
       ref={popupRef}
@@ -324,7 +369,7 @@ export default function DraggablePopup({
       <div className="popup-header">
         <h3>{title}</h3>
 
-        <div className="window-controls">
+        <div className="window-controls" data-no-drag>
           <button
             type="button"
             onClick={minimizePopup}
@@ -338,9 +383,15 @@ export default function DraggablePopup({
             type="button"
             onClick={toggleMaximize}
             aria-label={
-              mode === "normal" ? "Maximize popup" : "Restore popup"
+              mode === "normal"
+                ? "Maximize popup"
+                : "Restore popup"
             }
-            title={mode === "normal" ? "Maximize" : "Restore"}
+            title={
+              mode === "normal"
+                ? "Maximize"
+                : "Restore"
+            }
           >
             {mode === "normal" ? "□" : "❐"}
           </button>
@@ -356,6 +407,7 @@ export default function DraggablePopup({
         </div>
       </div>
 
+      {/* Content supplied by the parent page */}
       <div className="popup-form">
         {children}
       </div>

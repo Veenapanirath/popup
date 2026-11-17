@@ -22,15 +22,11 @@
   user-select: none;
   box-sizing: border-box;
 }
-
 .popup-window.normal {
   width: min(90vw, 28rem);
   height: auto;
   max-height: 75dvh;
 }
-
-
-
 .popup-window.maximized {
   width: 85vw;
   height: 85dvh;
@@ -43,15 +39,6 @@
 
   border-radius: 12px;
 }
-
-
-.popup-window.maximized .popup-form {
-  flex: 1;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
 .popup-header {
   display: flex;
   align-items: center;
@@ -61,11 +48,13 @@
   padding: 10px 16px;
 
   flex-shrink: 0;
+  box-sizing: border-box;
 
   background: #1d4ed8;
   color: #ffffff;
 
   cursor: grab;
+  touch-action: none;
 }
 
 .popup-header:active {
@@ -77,8 +66,6 @@
   font-size: 16px;
   font-weight: 600;
 }
-
-
 .window-controls {
   display: flex;
   align-items: center;
@@ -107,14 +94,13 @@
 .window-controls button:hover {
   background: rgba(255, 255, 255, 0.3);
 }
-
-
-
-
 .popup-form {
   flex: 0 1 auto;
 
+  width: 100%;
+  min-width: 0;
   min-height: 0;
+
   max-height: calc(75dvh - 48px);
 
   padding: 18px;
@@ -127,12 +113,16 @@
   cursor: default;
   user-select: text;
   box-sizing: border-box;
-}
 
-
-.popup-form {
   scrollbar-width: thin;
   scrollbar-color: #9ca3af transparent;
+}
+
+.popup-window.maximized .popup-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
 }
 
 .popup-form::-webkit-scrollbar {
@@ -145,6 +135,74 @@
 }
 
 
+.form-content {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+
+  gap: 16px;
+
+  width: 100%;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+  min-width: 0;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-width: 0;
+
+  padding: 10px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 10px;
+  margin-top: 20px;
+
+  flex-wrap: wrap;
+}
 
 .minimized-bar {
   position: fixed;
@@ -169,6 +227,7 @@
   cursor: grab;
   user-select: none;
   box-sizing: border-box;
+  touch-action: none;
 }
 
 .minimized-bar:active {
@@ -200,7 +259,6 @@
   background: rgba(255, 255, 255, 0.35);
 }
 
-
 /* =================================
    TABLET RESPONSIVENESS
 ================================= */
@@ -225,8 +283,6 @@
   }
 }
 
-
-
 @media (max-width: 600px) {
 
   .popup-window.normal {
@@ -246,6 +302,10 @@
 
   .popup-form {
     padding: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
   .popup-header h3 {
